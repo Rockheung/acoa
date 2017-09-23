@@ -1,6 +1,6 @@
 # File & Folder
-old/*
-tmp/*
+old/
+tmp/
 ImageNet_Fall_2011_Release/
 *.JPEG
 *.jpg
