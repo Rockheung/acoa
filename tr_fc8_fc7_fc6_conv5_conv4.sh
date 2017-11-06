@@ -1,0 +1,21 @@
+ACOASET=/home/rockheung/acoa_dataset
+DATASET_DIR=${ACOASET}/dataset
+TRAIN_DIR=${ACOASET}/train_fc8_fc7_fc6_conv5_conv4
+CHECKPOINT_PATH=${ACOASET}/checkpoints/vgg_16.ckpt
+SLIM_PATH=/home/rockheung/Downloads/models/research/slim
+python ${SLIM_PATH}/train_image_classifier.py \
+    --train_dir=${TRAIN_DIR} \
+    --dataset_dir=${DATASET_DIR} \
+    --dataset_name=apparel \
+    --dataset_split_name=train \
+    --model_name=vgg_16 \
+    --checkpoint_path=${CHECKPOINT_PATH} \
+    --batch_size=32 \
+    --save_interval_secs=1800 \
+    --save_summaries_secs=60 \
+    --learning_rate_decay_factor=0.95 \
+    --weight_decay=0.00004 \
+    --log_every_n_steps=10 \
+    --optimizer=adam \
+    --checkpoint_exclude_scopes=vgg_16/fc8 \
+    --trainable_scopes=vgg_16/fc8,vgg_16/fc7,vgg_16/fc6,vgg_16/conv5,vgg_16/conv4
