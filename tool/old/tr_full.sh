@@ -1,8 +1,8 @@
-ACOASET=/home/rockheung/acoa_dataset
+ACOASET=$HOME/acoa_dataset
 DATASET_DIR=${ACOASET}/dataset
 TRAIN_DIR=${ACOASET}/train_full
 CHECKPOINT_PATH=${ACOASET}/checkpoints/vgg_16.ckpt
-SLIM_PATH=/home/rockheung/Downloads/models/research/slim
+SLIM_PATH=$HOME/Downloads/acoa/slim
 python ${SLIM_PATH}/train_image_classifier.py \
     --train_dir=${TRAIN_DIR} \
     --dataset_dir=${DATASET_DIR} \
