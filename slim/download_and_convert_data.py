@@ -39,7 +39,7 @@ import tensorflow as tf
 from datasets import download_and_convert_cifar10
 from datasets import download_and_convert_flowers
 from datasets import download_and_convert_mnist
-from datasets import download_and_convert_apparel
+from datasets import download_and_convert_acoa
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -66,8 +66,8 @@ def main(_):
     download_and_convert_flowers.run(FLAGS.dataset_dir)
   elif FLAGS.dataset_name == 'mnist':
     download_and_convert_mnist.run(FLAGS.dataset_dir)
-  elif FLAGS.dataset_name == 'apparel':
-    download_and_convert_apparel.run(FLAGS.dataset_dir)
+  elif FLAGS.dataset_name == 'acoa':
+    download_and_convert_acoa.run(FLAGS.dataset_dir)
   else:
     raise ValueError(
         'dataset_name [%s] was not recognized.' % FLAGS.dataset_name)
