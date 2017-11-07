@@ -29,9 +29,9 @@ from datasets import dataset_utils
 
 slim = tf.contrib.slim
 
-_FILE_PATTERN = 'acoas_%s_*.tfrecord'
+_FILE_PATTERN = 'acoa_%s_*.tfrecord'
 
-SPLITS_TO_SIZES = {'train': 12455, 'validation': 311333}
+SPLITS_TO_SIZES = {'train': 12455, 'validation': 3113}
 
 _NUM_CLASSES = 7
 
