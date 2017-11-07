@@ -17,4 +17,4 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --weight_decay=0.00004 \
     --log_every_n_steps=10 \
     --optimizer=adam \
-    --checkpoint_exclude_scopes=vgg_16/fc8 \
+    --checkpoint_exclude_scopes=vgg_16/fc8
