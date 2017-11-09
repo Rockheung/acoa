@@ -114,7 +114,7 @@ def main(_):
       dataset.num_classes = len(set(lv2_id_to_lv1_id.values()))
     elif FLAGS.hierarchy_level == 2:
       print("level 2 class")  
-    else
+    else :
       print("error")
       return 0
 
@@ -141,23 +141,25 @@ def main(_):
 
 
     ############################ACOA################################
-    #Label conversion following the FLAGS.hierarchy_level
+      #Label conversion following the FLAGS.hierarchy_level
 
-    #if hierarchy_level was chosen as 1, our label(fine grained) 
-    # will be translated to level 1 class(coarse grained) 
-    condition = tf.constant(FLAGS.hierarchy_level)
-    keys = tf.constant(lv2_id_to_lv1_id.keys(), dtypes.int64)
-    values = tf.constant(lv2_id_to_lv1_id.values(), dtypes.int64)
+      #if hierarchy_level was chosen as 1, our label(fine grained) 
+      # will be translated to level 1 class(coarse grained) 
+      condition = tf.constant(FLAGS.hierarchy_level)
 
-    # a hash table is defined for translating
-    table = tf.contrib.lookup.HashTable(
-    tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1)
-    out = table.lookup(label)
+      keys = tf.constant(lv2_id_to_lv1_id.keys(), dtypes.int64)
+      values = tf.constant(lv2_id_to_lv1_id.values(), dtypes.int64)
 
-    #conditional operator in tensorflow
-    label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
+      # a hash table is defined for translating
+      table = tf.contrib.lookup.HashTable(
+      tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1
+        )
+      out = table.lookup(label)
 
-    ################################################################
+      #conditional operator in tensorflow
+      label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
+
+      ################################################################
 
 
     #####################################
