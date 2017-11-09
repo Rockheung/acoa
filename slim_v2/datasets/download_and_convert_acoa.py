@@ -40,13 +40,13 @@ from datasets import dataset_utils
 _DATA_URL = 'http://download.tensorflow.org/example_images/flower_photos.tgz'
 
 # The number of images in the validation set.
-_NUM_VALIDATION = 3113
+_NUM_VALIDATION = 1872
 
 # Seed for repeatability.
 _RANDOM_SEED = 0
 
 # The number of shards per dataset split.
-_NUM_SHARDS = 2
+_NUM_SHARDS = 1
 
 
 class ImageReader(object):
@@ -85,16 +85,16 @@ def _get_filenames_and_classes(dataset_dir):
   hierarchy = {}
   class_lv2_names = []
   for class_lv1_name in os.listdir(dataset_dir):
-  	hierarchy[class_lv1_name] = [] #Make a level 1 class key on the dictionary
-  	path1 = os.path.join(dataset_dir, class_lv1_name)
-  	for class_lv2_name in os.listdir(path1):
-  		hierarchy[class_lv1_name].append(class_lv2_name)
-  		#Append subfolder name(level 2 class) to a member of the level 1 class's list
-  		path = os.path.join(path1, class_lv2_name)
-  		if os.path.isdir(path):
-  			directories.append(path)
-  			class_lv2_names.append(class_lv2_name)
- 
+    hierarchy[class_lv1_name] = [] #Make a level 1 class key on the dictionary
+    path1 = os.path.join(dataset_dir, class_lv1_name)
+    for class_lv2_name in os.listdir(path1):
+      hierarchy[class_lv1_name].append(class_lv2_name)
+      #Append subfolder name(level 2 class) to a member of the level 1 class's list
+      path = os.path.join(path1, class_lv2_name)
+      if os.path.isdir(path):
+        directories.append(path)
+        class_lv2_names.append(class_lv2_name)
+
   photo_filenames = []
   for directory in directories:
     for filename in os.listdir(directory):

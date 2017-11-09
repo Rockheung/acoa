@@ -1,8 +1,8 @@
 ACOASET=$HOME/acoa_dataset
-DATASET_DIR=${ACOASET}/dataset
+DATASET_DIR=${ACOASET}/dataset/class_7
 TRAIN_DIR=${ACOASET}/train_fc8_fc7_fc6_conv5_conv4
 CHECKPOINT_PATH=${ACOASET}/checkpoints/vgg_16.ckpt
-SLIM_PATH=$HOME/Downloads/acoa/slim
+SLIM_PATH=$HOME/Downloads/acoa/slim_v2
 python ${SLIM_PATH}/train_image_classifier.py \
     --train_dir=${TRAIN_DIR} \
     --dataset_dir=${DATASET_DIR} \
@@ -18,4 +18,5 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --log_every_n_steps=10 \
     --optimizer=adam \
     --checkpoint_exclude_scopes=vgg_16/fc8 \
-    --trainable_scopes=vgg_16/fc8,vgg_16/fc7,vgg_16/fc6,vgg_16/conv5,vgg_16/conv4
+    --trainable_scopes=vgg_16/fc8,vgg_16/fc7,vgg_16/fc6,vgg_16/conv5,vgg_16/conv4 \
+    --hierarchy_level=2
