@@ -24,7 +24,6 @@ import tensorflow as tf
 from datasets import dataset_factory
 from nets import nets_factory
 from preprocessing import preprocessing_factory
-from tensorflow.python.framework import dtypes
 
 slim = tf.contrib.slim
 
@@ -80,8 +79,8 @@ tf.app.flags.DEFINE_float(
 tf.app.flags.DEFINE_integer(
     'eval_image_size', None, 'Eval image size')
 
-tf.app.flags.DEFINE_integer('hierarchy_level', 1,
-                            'what class level do you want to use for train')
+tf.app.flags.DEFINE_integer(
+    'eval_interval_secs', None, 'The minimum number of seconds between evaluations')
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -99,26 +98,6 @@ def main(_):
     ######################
     dataset = dataset_factory.get_dataset(
         FLAGS.dataset_name, FLAGS.dataset_split_name, FLAGS.dataset_dir)
-
-
-    ############################
-    # Select dataset hierarchy #
-    ############################
-    file_path = os.path.join(FLAGS.dataset_dir, 'lv2_id_to_lv1_id.json')
-    _file = open(file_path).read()
-    lv2_id_to_lv1_id = json.loads(_file)
-    lv2_id_to_lv1_id = {int(k):int(v) for k,v in lv2_id_to_lv1_id.items()}
-    if FLAGS.hierarchy_level == 1:
-      #level 1 class
-      print("level 1 class")
-      dataset.num_classes = len(set(lv2_id_to_lv1_id.values()))
-    elif FLAGS.hierarchy_level == 2:
-      print("level 2 class")  
-    else
-      print("error")
-      return 0
-
-
 
     ####################
     # Select the model #
@@ -138,27 +117,6 @@ def main(_):
         common_queue_min=FLAGS.batch_size)
     [image, label] = provider.get(['image', 'label'])
     label -= FLAGS.labels_offset
-
-
-    ############################ACOA################################
-    #Label conversion following the FLAGS.hierarchy_level
-
-    #if hierarchy_level was chosen as 1, our label(fine grained) 
-    # will be translated to level 1 class(coarse grained) 
-    condition = tf.constant(FLAGS.hierarchy_level)
-    keys = tf.constant(lv2_id_to_lv1_id.keys(), dtypes.int64)
-    values = tf.constant(lv2_id_to_lv1_id.values(), dtypes.int64)
-
-    # a hash table is defined for translating
-    table = tf.contrib.lookup.HashTable(
-    tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1)
-    out = table.lookup(label)
-
-    #conditional operator in tensorflow
-    label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
-
-    ################################################################
-
 
     #####################################
     # Select the preprocessing function #
@@ -223,7 +181,7 @@ def main(_):
 
     tf.logging.info('Evaluating %s' % checkpoint_path)
 
-    slim.evaluation.evaluate_loop(
+    slim.evaluation.evaluation_loop(
         master=FLAGS.master,
         checkpoint_dir=FLAGS.checkpoint_path,
         logdir=FLAGS.eval_dir,

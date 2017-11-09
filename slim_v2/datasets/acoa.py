@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Provides data for the flowers dataset.
+"""Provides data for the acoa dataset.
 
 The dataset scripts used to create the dataset can be found at:
 tensorflow/models/research/slim/datasets/download_and_convert_flowers.py

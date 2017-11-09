@@ -27,5 +27,5 @@ def search(dirname, ext, result =[] ):
 #                print result
     return result
 
-path = '/home/cv1/Downloads/final_data_v2'
+path = '/home/rockheung/acoa_dataset/final_data_v2'
 print(countf(path, '.JPEG'))

@@ -39,8 +39,8 @@ from datasets import dataset_utils
 # The URL where the Flowers data can be downloaded.
 _DATA_URL = 'http://download.tensorflow.org/example_images/flower_photos.tgz'
 
-# The number of images in the validation set.
-_NUM_VALIDATION = 1872
+# Ratio for the number of images in the validation set.
+_RATIO_VALIDATION = 0.2
 
 # Seed for repeatability.
 _RANDOM_SEED = 0
@@ -68,6 +68,18 @@ class ImageReader(object):
     assert image.shape[2] == 3
     return image
 
+
+def countf(dirname, ext, count = 0 ):
+    filenames = os.listdir(dirname)
+    count_all = 0
+    for filename in filenames:
+        filepath = os.path.join(dirname, filename)
+        if os.path.isdir(filepath):
+            count_all += countf(filepath, ext, count = count_all )
+        else:
+            if ext == os.path.splitext(filename)[-1]:
+                count_all += 1
+    return count_all
 
 def _get_filenames_and_classes(dataset_dir):
   """Returns a list of filenames and inferred class names.
@@ -211,7 +223,9 @@ def run(dataset_dir):
   photo_filenames, hierarchy, class_lv2_names = _get_filenames_and_classes(dataset_dir)
   #Make a dictionary of class name : id. Its for easy one hot encoding in training section.
   class_names_to_ids = dict(zip(class_lv2_names, range(len(class_lv2_names))))
-  
+
+  # The number of images in the validation set.
+  _NUM_VALIDATION = int(round(countf(dataset_dir, '.JPEG') * _RATIO_VALIDATION))
 
   # Divide into train and test:
   random.seed(_RANDOM_SEED)
@@ -253,11 +267,13 @@ def run(dataset_dir):
   print(lv1_id_to_class_names)
   dataset_utils.write_label_file(lv1_id_to_class_names, dataset_dir, filename='lv1_labels.txt')
 
-    
-
-
-
-  
+  # Drop train-set and validation-set
+  # {'train': 12455, 'validation': 3113}
+  with open(os.path.join(dataset_dir, 'splits_to_size.json'), 'w') as outfile:
+      file_numbers = countf(dataset_dir, '.JPEG')
+      set_ratio = {'train': int(round(file_numbers * (1 - _RATIO_VALIDATION) ) ), 
+                   'validation': int(round(file_numbers * _RATIO_VALIDATION) ) }
+      json.dump(set_ratio, outfile, indent = 1)
 
   #_clean_up_temporary_files(dataset_dir)
   print('\nFinished converting the acoa dataset!')
