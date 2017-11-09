@@ -80,8 +80,14 @@ tf.app.flags.DEFINE_float(
 tf.app.flags.DEFINE_integer(
     'eval_image_size', None, 'Eval image size')
 
+tf.app.flags.DEFINE_integer(
+    'eval_interval_secs', None, 'The minimum number of seconds between evaluations')
+
 tf.app.flags.DEFINE_integer('hierarchy_level', 1,
                             'what class level do you want to use for train')
+
+tf.app.flags.DEFINE_float(
+    'per_process_gpu_memory_fraction', 1, 'A value between 0 and 1 that indicates what fraction of the available GPU memory to pre-allocate for each process')
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -141,25 +147,25 @@ def main(_):
 
 
     ############################ACOA################################
-      #Label conversion following the FLAGS.hierarchy_level
+    #Label conversion following the FLAGS.hierarchy_level
 
-      #if hierarchy_level was chosen as 1, our label(fine grained) 
-      # will be translated to level 1 class(coarse grained) 
-      condition = tf.constant(FLAGS.hierarchy_level)
+    #if hierarchy_level was chosen as 1, our label(fine grained) 
+    # will be translated to level 1 class(coarse grained) 
+    condition = tf.constant(FLAGS.hierarchy_level)
 
-      keys = tf.constant(lv2_id_to_lv1_id.keys(), dtypes.int64)
-      values = tf.constant(lv2_id_to_lv1_id.values(), dtypes.int64)
+    keys = tf.constant(lv2_id_to_lv1_id.keys(), dtypes.int64)
+    values = tf.constant(lv2_id_to_lv1_id.values(), dtypes.int64)
 
-      # a hash table is defined for translating
-      table = tf.contrib.lookup.HashTable(
-      tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1
-        )
-      out = table.lookup(label)
+    # a hash table is defined for translating
+    table = tf.contrib.lookup.HashTable(
+    tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1
+    )
+    out = table.lookup(label)
 
-      #conditional operator in tensorflow
-      label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
+    #conditional operator in tensorflow
+    label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
 
-      ################################################################
+    ################################################################
 
 
     #####################################
@@ -225,6 +231,14 @@ def main(_):
 
     tf.logging.info('Evaluating %s' % checkpoint_path)
 
+    # Set GPU
+    # A value between 0 and 1 that indicates what fraction of the
+    # available GPU memory to pre-allocate for each process.  1 means
+    # to pre-allocate all of the GPU memory, 0.5 means the process
+    # allocates ~50% of the available GPU memory.
+    config = tf.ConfigProto()
+    config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
+
     slim.evaluation.evaluate_loop(
         master=FLAGS.master,
         checkpoint_dir=FLAGS.checkpoint_path,
@@ -232,8 +246,8 @@ def main(_):
         num_evals=num_batches,
         eval_op=list(names_to_updates.values()),
         variables_to_restore=variables_to_restore,
-        eval_interval_secs = FLAGS.eval_interval_secs)
-
+        eval_interval_secs = FLAGS.eval_interval_secs,
+        session_config=config if FLAGS.per_process_gpu_memory_fraction else None)
 
 if __name__ == '__main__':
   tf.app.run()
