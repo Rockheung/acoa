@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import math
 import tensorflow as tf
+import os, json
 
 from datasets import dataset_factory
 from nets import nets_factory
@@ -239,7 +240,7 @@ def main(_):
     config = tf.ConfigProto()
     config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
 
-    slim.evaluation.evaluate_loop(
+    slim.evaluation.evaluation_loop(
         master=FLAGS.master,
         checkpoint_dir=FLAGS.checkpoint_path,
         logdir=FLAGS.eval_dir,

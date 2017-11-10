@@ -269,7 +269,7 @@ def run(dataset_dir):
 
   # Drop train-set and validation-set
   # {'train': 12455, 'validation': 3113}
-  with open(os.path.join(dataset_dir, 'splits_to_size.json'), 'w') as outfile:
+  with open(os.path.join(dataset_dir, 'splits_to_sizes.json'), 'w') as outfile:
       file_numbers = countf(dataset_dir, '.JPEG')
       set_ratio = {'train': int(round(file_numbers * (1 - _RATIO_VALIDATION) ) ), 
                    'validation': int(round(file_numbers * _RATIO_VALIDATION) ) }
