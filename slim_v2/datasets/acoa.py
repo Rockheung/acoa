@@ -41,7 +41,7 @@ _ITEMS_TO_DESCRIPTIONS = {
 }
 
 
-def get_split(split_name, dataset_dir, file_pattern=None, reader=None):
+def get_split(split_name, dataset_dir, hierarchy_level, file_pattern=None, reader=None):
   """Gets a dataset tuple with instructions for reading flowers.
 
   Args:
@@ -63,10 +63,15 @@ def get_split(split_name, dataset_dir, file_pattern=None, reader=None):
     _file = ss.read()
     SPLITS_TO_SIZES = json.loads(_file)
 
-  with open(os.path.join(dataset_dir, 'labels.txt')) as labelsfile:
-    _NUM_CLASSES = sum(1 for line in labelsfile if line.rstrip('\n'))
-#    _NUM_CLASSES = 7
 
+  if hierarchy_level == 1:
+    with open(os.path.join(dataset_dir, 'labels.txt')) as labelsfile:
+      _NUM_CLASSES = sum(1 for line in labelsfile if line.rstrip('\n'))
+  elif hierarchy_level == 2:
+    with open(os.path.join(dataset_dir, 'lv1_labels.txt')) as labelsfile:
+      _NUM_CLASSES = sum(1 for line in labelsfile if line.rstrip('\n'))
+  else:
+    pass
 
   if split_name not in SPLITS_TO_SIZES:
     raise ValueError('split name %s was not recognized.' % split_name)

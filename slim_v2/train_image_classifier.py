@@ -391,7 +391,7 @@ def main(_):
   if not FLAGS.dataset_dir:
     raise ValueError('You must supply the dataset directory with --dataset_dir')
 
-  tf.logging.set_verbosity(tf.logging.INFO)
+  tf.logging.set_verbosity(tf.logging.DEBUG)
   with tf.Graph().as_default():
     #######################
     # Config model_deploy #
@@ -411,7 +411,8 @@ def main(_):
     # Select the dataset #
     ######################
     dataset = dataset_factory.get_dataset(
-        FLAGS.dataset_name, FLAGS.dataset_split_name, FLAGS.dataset_dir)
+        FLAGS.dataset_name, FLAGS.dataset_split_name, FLAGS.dataset_dir,
+        hierarchy_level = FLAGS.hierarchy_level)
 
 
     ############################ACOA################################
@@ -448,6 +449,27 @@ def main(_):
         weight_decay=FLAGS.weight_decay,
         is_training=True)
 
+    ############################ACOA################################
+    #Label conversion following the FLAGS.hierarchy_level
+
+    #if hierarchy_level was chosen as 1, our label(fine grained) 
+    # will be translated to level 1 class(coarse grained) 
+    condition = tf.constant(FLAGS.hierarchy_level)
+
+    keys = tf.constant(lv2_id_to_lv1_id.keys(), dtypes.int64)
+    values = tf.constant(lv2_id_to_lv1_id.values(), dtypes.int64)
+
+    # a hash table is defined for translating
+    table = tf.contrib.lookup.HashTable(
+    tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1
+    )
+    out = table.lookup(label)
+
+    #conditional operator in tensorflow
+    label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
+
+    ################################################################
+
     #####################################
     # Select the preprocessing function #
     #####################################
@@ -468,28 +490,6 @@ def main(_):
       [image, label] = provider.get(['image', 'label'])
       label -= FLAGS.labels_offset
       train_image_size = FLAGS.train_image_size or network_fn.default_image_size
-
-
-      ############################ACOA################################
-      #Label conversion following the FLAGS.hierarchy_level
-
-      #if hierarchy_level was chosen as 1, our label(fine grained) 
-      # will be translated to level 1 class(coarse grained) 
-      condition = tf.constant(FLAGS.hierarchy_level)
-
-      keys = tf.constant(lv2_id_to_lv1_id.keys(), dtypes.int64)
-      values = tf.constant(lv2_id_to_lv1_id.values(), dtypes.int64)
-
-      # a hash table is defined for translating
-      table = tf.contrib.lookup.HashTable(
-      tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1
-        )
-      out = table.lookup(label)
-
-      #conditional operator in tensorflow
-      label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
-
-      ################################################################
 
 
       image = image_preprocessing_fn(image, train_image_size, train_image_size)
