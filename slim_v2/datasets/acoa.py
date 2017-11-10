@@ -65,13 +65,15 @@ def get_split(split_name, dataset_dir, hierarchy_level, file_pattern=None, reade
 
 
   if hierarchy_level == 1:
-    with open(os.path.join(dataset_dir, 'labels.txt')) as labelsfile:
+    with open(os.path.join(dataset_dir, 'lv1_labels.txt')) as labelsfile:
       _NUM_CLASSES = sum(1 for line in labelsfile if line.rstrip('\n'))
   elif hierarchy_level == 2:
-    with open(os.path.join(dataset_dir, 'lv1_labels.txt')) as labelsfile:
+    with open(os.path.join(dataset_dir, 'labels.txt')) as labelsfile:
       _NUM_CLASSES = sum(1 for line in labelsfile if line.rstrip('\n'))
   else:
     pass
+
+  print(_NUM_CLASSES)
 
   if split_name not in SPLITS_TO_SIZES:
     raise ValueError('split name %s was not recognized.' % split_name)
