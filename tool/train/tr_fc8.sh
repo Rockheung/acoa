@@ -2,11 +2,11 @@ ACOASET=$HOME/acoa_dataset
 DATASET_DIR=${ACOASET}/dataset
 TRAIN_DIR=${ACOASET}/train_fc8
 CHECKPOINT_PATH=${ACOASET}/checkpoints/vgg_16.ckpt
-SLIM_PATH=$HOME/Downloads/acoa/slim
+SLIM_PATH=$HOME/Downloads/models/research/slim
 python ${SLIM_PATH}/train_image_classifier.py \
     --train_dir=${TRAIN_DIR} \
     --dataset_dir=${DATASET_DIR} \
-    --dataset_name=acoa \
+    --dataset_name=acoa_test \
     --dataset_split_name=train \
     --model_name=vgg_16 \
     --checkpoint_path=${CHECKPOINT_PATH} \
@@ -18,5 +18,4 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --log_every_n_steps=10 \
     --optimizer=adam \
     --checkpoint_exclude_scopes=vgg_16/fc8 \
-    --trainable_scopes=vgg_16/fc8 \
-    --per_process_gpu_memory_fraction=0.6
+    --trainable_scopes=vgg_16/fc8
