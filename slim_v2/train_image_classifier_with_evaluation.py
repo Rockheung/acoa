@@ -228,6 +228,11 @@ tf.app.flags.DEFINE_boolean(
 FLAGS = tf.app.flags.FLAGS
 
 
+def train_evaluate_step(sess, train_op, global_step, train_step_kwargs):
+  total_loss, should_stop = slim.learning.train_step(sess, train_op, global_step, train_step_kwargs)
+
+  return total_loss, should_stop
+
 def _configure_learning_rate(num_samples_per_epoch, global_step):
   """Configures the learning rate.
 
@@ -617,7 +622,6 @@ def main(_):
     # allocates ~50% of the available GPU memory.
     config = tf.ConfigProto()
     config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
-    config.gpu_options.allow_growth = True
 
 
     ###########################
@@ -625,6 +629,7 @@ def main(_):
     ###########################
     slim.learning.train(
         train_tensor,
+        train_step_fn = train_evaluate_step,
         logdir=FLAGS.train_dir,
         master=FLAGS.master,
         is_chief=(FLAGS.task == 0),

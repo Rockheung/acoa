@@ -13,7 +13,7 @@ python ${SLIM_PATH}/eval_image_classifier.py \
     --model_name=vgg_16 \
     --checkpoint_path=${TRAIN_DIR} \
     --eval_dir=${EVAL_DIR} \
-    --batch_size 32 \
+    --batch_size 8 \
     --eval_interval_secs 60 \
     --hierarchy_level 1 \
-    --per_process_gpu_memory_fraction 1
+    --per_process_gpu_memory_fraction 0.9

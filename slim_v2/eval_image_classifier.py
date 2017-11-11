@@ -240,6 +240,7 @@ def main(_):
     # allocates ~50% of the available GPU memory.
     config = tf.ConfigProto()
     config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
+    config.gpu_options.allow_growth = True
 
     slim.evaluation.evaluation_loop(
         master=FLAGS.master,
