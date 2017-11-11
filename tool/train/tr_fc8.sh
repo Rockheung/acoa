@@ -6,7 +6,7 @@ SLIM_PATH=$HOME/Downloads/acoa/slim_v2
 python ${SLIM_PATH}/train_image_classifier.py \
     --train_dir=${TRAIN_DIR} \
     --dataset_dir=${DATASET_DIR} \
-    --dataset_name=acoa_test \
+    --dataset_name=acoa \
     --dataset_split_name=train \
     --model_name=vgg_16 \
     --checkpoint_path=${CHECKPOINT_PATH} \
