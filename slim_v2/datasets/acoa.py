@@ -22,7 +22,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
+import os, json
 import tensorflow as tf
 
 from datasets import dataset_utils
@@ -31,9 +31,9 @@ slim = tf.contrib.slim
 
 _FILE_PATTERN = 'acoa_%s_*.tfrecord'
 
-SPLITS_TO_SIZES = {'train': 12455, 'validation': 3113}
+# SPLITS_TO_SIZES = {'train': 12454, 'validation': 3114}
 
-_NUM_CLASSES = 7
+# _NUM_CLASSES = 7
 
 _ITEMS_TO_DESCRIPTIONS = {
     'image': 'A color image of varying size.',
@@ -41,7 +41,7 @@ _ITEMS_TO_DESCRIPTIONS = {
 }
 
 
-def get_split(split_name, dataset_dir, file_pattern=None, reader=None):
+def get_split(split_name, dataset_dir, hierarchy_level, file_pattern=None, reader=None):
   """Gets a dataset tuple with instructions for reading flowers.
 
   Args:
@@ -58,6 +58,23 @@ def get_split(split_name, dataset_dir, file_pattern=None, reader=None):
   Raises:
     ValueError: if `split_name` is not a valid train/validation split.
   """
+  file_path = os.path.join(dataset_dir, 'splits_to_sizes.json')
+  with open(file_path) as ss:
+    _file = ss.read()
+    SPLITS_TO_SIZES = json.loads(_file)
+
+
+  if hierarchy_level == 1:
+    with open(os.path.join(dataset_dir, 'lv1_labels.txt')) as labelsfile:
+      _NUM_CLASSES = sum(1 for line in labelsfile if line.rstrip('\n'))
+  elif hierarchy_level == 2:
+    with open(os.path.join(dataset_dir, 'labels.txt')) as labelsfile:
+      _NUM_CLASSES = sum(1 for line in labelsfile if line.rstrip('\n'))
+  else:
+    pass
+
+  print(_NUM_CLASSES)
+
   if split_name not in SPLITS_TO_SIZES:
     raise ValueError('split name %s was not recognized.' % split_name)
 

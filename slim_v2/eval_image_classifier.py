@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import math
 import tensorflow as tf
+import os, json
 
 from datasets import dataset_factory
 from nets import nets_factory
@@ -104,7 +105,8 @@ def main(_):
     # Select the dataset #
     ######################
     dataset = dataset_factory.get_dataset(
-        FLAGS.dataset_name, FLAGS.dataset_split_name, FLAGS.dataset_dir)
+        FLAGS.dataset_name, FLAGS.dataset_split_name, FLAGS.dataset_dir, 
+        hierarchy_level = FLAGS.hierarchy_level)
 
 
     ############################
@@ -238,8 +240,9 @@ def main(_):
     # allocates ~50% of the available GPU memory.
     config = tf.ConfigProto()
     config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
+    config.gpu_options.allow_growth = True
 
-    slim.evaluation.evaluate_loop(
+    slim.evaluation.evaluation_loop(
         master=FLAGS.master,
         checkpoint_dir=FLAGS.checkpoint_path,
         logdir=FLAGS.eval_dir,
@@ -247,7 +250,7 @@ def main(_):
         eval_op=list(names_to_updates.values()),
         variables_to_restore=variables_to_restore,
         eval_interval_secs = FLAGS.eval_interval_secs,
-        session_config=config if FLAGS.per_process_gpu_memory_fraction else None)
+        session_config=config)
 
 if __name__ == '__main__':
   tf.app.run()

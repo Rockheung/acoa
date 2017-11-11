@@ -34,7 +34,7 @@ datasets_map = {
 }
 
 
-def get_dataset(name, split_name, dataset_dir, file_pattern=None, reader=None):
+def get_dataset(name, split_name, dataset_dir, hierarchy_level, file_pattern=None, reader=None ):
   """Given a dataset name and a split_name returns a Dataset.
 
   Args:
@@ -56,5 +56,6 @@ def get_dataset(name, split_name, dataset_dir, file_pattern=None, reader=None):
   return datasets_map[name].get_split(
       split_name,
       dataset_dir,
+      hierarchy_level,
       file_pattern,
       reader)
