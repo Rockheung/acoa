@@ -20,4 +20,4 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --checkpoint_exclude_scopes=vgg_16/fc8 \
     --trainable_scopes=vgg_16/fc8 \
     --per_process_gpu_memory_fraction=0.9 \
-    --hierarchy_level=2
+    --hierarchy_level=1
