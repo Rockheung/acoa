@@ -1,6 +1,6 @@
 ACOASET=$HOME/acoa_dataset
 DATASET_DIR=${ACOASET}/dataset/class_7
-TRAIN_DIR=${ACOASET}/train_fc8
+TRAIN_DIR=${ACOASET}/weight/1_coarse/train_fc8
 CHECKPOINT_PATH=${ACOASET}/checkpoints/vgg_16.ckpt
 SLIM_PATH=$HOME/Downloads/acoa/slim_v2
 python ${SLIM_PATH}/train_image_classifier.py \
