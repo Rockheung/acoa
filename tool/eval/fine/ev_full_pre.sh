@@ -1,7 +1,7 @@
 ACOASET=$HOME/acoa_dataset
 DATASET_DIR=${ACOASET}/dataset/class_7
-TRAIN_DIR=${ACOASET}/train_full_pre
-EVAL_DIR=${ACOASET}/eval_full_pre
+TRAIN_DIR=${ACOASET}/weight/11_class_25/train_full_pre
+EVAL_DIR=${ACOASET}/weight/11_class_25/eval_full_pre
 CHECKPOINT_PATH=${ACOASET}/checkpoints/vgg_16.ckpt
 CKPT=${ACOASET}/train_fc8/ckpt-291715
 #CKPT=${ACOASET}/train_full/ckpt55
