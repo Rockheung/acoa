@@ -140,7 +140,6 @@ def vgg_a(inputs,
       return net, end_points
 vgg_a.default_image_size = 224
 
-
 def vgg_16(inputs,
 		   classifier,	
            num_classes=1000,
@@ -180,6 +179,15 @@ def vgg_16(inputs,
       or the input to the logits layer (if num_classes is 0 or None).
     end_points: a dict of tensors with intermediate activations.
   """
+
+  # data =  {'Outer': ['cardigan', 'jacket', 'coat'], 'Bottom': ['mini-skirt', 'short_pants', 'skirt', 'long_pants'], 'Dress': ['short_dress', 'long_dress'], 'Top': ['polo_shirt', 'T-shirt,tank-top', 'long-sleeved,sweat_shirt', 'dress_shirt'], 'Shoe': ['slipper, sandal', 'gentleman shoe', 'snikers', 'ladys shoe', 'boot', 'baby shoe', 'running shoe'], 'Suit': ['suit'], 'Hat': ['cap', 'boater, Bucket', 'flat', 'beanie']}
+  # for i in data:
+  #     num_classes[i] = len(data[i])
+  # print num_classes
+  #    => {'Outer': 3, 'Bottom': 4, 'Hat': 4, 'Top': 4, 'Shoe': 7, 'Suit': 1, 'Dress': 2}
+
+  num_classes = {'Outer': 3, 'Bottom': 4, 'Hat': 4, 'Top': 4, 'Shoe': 7, 'Suit': 1, 'Dress': 2}
+
   with tf.variable_scope(scope, 'vgg_16', [inputs]) as sc:
     end_points_collection = sc.original_name_scope + '_end_points'
     # Collect outputs for conv2d, fully_connected and max_pool2d.
@@ -191,18 +199,61 @@ def vgg_16(inputs,
       net = slim.max_pool2d(net, [2, 2], scope='pool2')
       net = slim.repeat(net, 3, slim.conv2d, 256, [3, 3], scope='conv3')
       net = slim.max_pool2d(net, [2, 2], scope='pool3')
+      to_addon = net
 
-      addon = {}
-      addon['Bottom'] = net
-      addon['Dress'] = net
-      addon['Hat'] = net
-      addon['Outer'] = net
-      addon['Shoe'] = net
-      addon['Suit'] = net
-      addon['Top'] = net
-      end_point = 'addon'
-      with tf.variable_scope(end_point):
-          with tf.variable_scope('Branch_0'):
+
+      def addon_net(input_):
+          net = slim.repeat(input_, 3, slim.conv2d, 128, [3, 3], scope='conv1')
+          net = slim.max_pool2d(net, [2, 2], scope='addon/Bottom/pool1')
+          net = slim.repeat(net, 3, slim.conv2d, 64, [3, 3], scope='conv2')
+          net = slim.max_pool2d(net, [2, 2], scope='pool2')
+          # Use conv2d instead of fully_connected layers.
+          net = slim.conv2d(net, 4096, [7, 7], padding=fc_conv_padding, scope='fc1')
+          net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
+                                     scope='dropout1')
+          net = slim.conv2d(net, 4096, [1, 1], scope='fc2')
+          # if global_pool:
+          #   net = tf.reduce_mean(net, [1, 2], keep_dims=True, name='addon/Bottom/global_pool')
+          #   end_points['global_pool'] = net
+          if num_classes[lv1_classname]:
+            net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
+                                       scope='dropout2')
+            net = slim.conv2d(net, num_classes[lv1_classname], [1, 1],
+                                      activation_fn=None,
+                                      normalizer_fn=None,
+                                      scope='fc3')
+            if spatial_squeeze and num_classes[lv1_classname] is not None:
+            net = tf.squeeze(net, [1, 2], name='fc3/squeezed')
+            return net
+
+      
+
+
+
+
+
+
+
+
+
+      end_points = slim.utils.convert_collection_to_dict(end_points_collection)
+      if global_pool:
+        net = tf.reduce_mean(net, [1, 2], keep_dims=True, name='global_pool')
+        end_points['global_pool'] = net
+      if num_classes:
+        net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
+                           scope='dropout7')
+        net = slim.conv2d(net, num_classes, [1, 1],
+                          activation_fn=None,
+                          normalizer_fn=None,
+                          scope='fc8')
+        if spatial_squeeze and num_classes is not None:
+          net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
+        end_points[sc.name + '/fc8'] = net
+
+
+
+
             branch_0 = slim.conv2d(net, 128, [1, 1], scope='Conv2d_0a_1x1')
           with tf.variable_scope('Branch_1'):
             branch_1 = slim.conv2d(net, 128, [1, 1], scope='Conv2d_0a_1x1')
@@ -219,6 +270,19 @@ def vgg_16(inputs,
       if final_endpoint == end_point: return net, end_points
 
 
+
+
+  with tf.variable_scope(scope, 'vgg_16', [inputs]) as sc:
+    end_points_collection = sc.original_name_scope + '_end_points'
+    # Collect outputs for conv2d, fully_connected and max_pool2d.
+    with slim.arg_scope([slim.conv2d, slim.fully_connected, slim.max_pool2d],
+                        outputs_collections=end_points_collection):
+      net = slim.repeat(inputs, 2, slim.conv2d, 64, [3, 3], scope='conv1')
+      net = slim.max_pool2d(net, [2, 2], scope='pool1')
+      net = slim.repeat(net, 2, slim.conv2d, 128, [3, 3], scope='conv2')
+      net = slim.max_pool2d(net, [2, 2], scope='pool2')
+      net = slim.repeat(net, 3, slim.conv2d, 256, [3, 3], scope='conv3')
+      net = slim.max_pool2d(net, [2, 2], scope='pool3')
 
 
       net = slim.repeat(net, 3, slim.conv2d, 512, [3, 3], scope='conv4')
