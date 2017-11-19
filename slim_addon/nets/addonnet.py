@@ -140,6 +140,34 @@ def vgg_a(inputs,
       return net, end_points
 vgg_a.default_image_size = 224
 
+
+
+
+def addon_net(input_):
+  net = slim.repeat(input_, 3, slim.conv2d, 128, [3, 3], scope='conv1')
+  net = slim.max_pool2d(net, [2, 2], scope='addon/Bottom/pool1')
+  net = slim.repeat(net, 3, slim.conv2d, 64, [3, 3], scope='conv2')
+  net = slim.max_pool2d(net, [2, 2], scope='pool2')
+  # Use conv2d instead of fully_connected layers.
+  net = slim.conv2d(net, 4096, [7, 7], padding=fc_conv_padding, scope='fc1')
+  net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
+                              scope='dropout1')
+  net = slim.conv2d(net, 4096, [1, 1], scope='fc2')
+  # if global_pool:
+  #   net = tf.reduce_mean(net, [1, 2], keep_dims=True, name='addon/Bottom/global_pool')
+  #   end_points['global_pool'] = net
+  if num_classes[lv1_classname]:
+    net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
+                                scope='dropout2')
+    net = slim.conv2d(net, num_classes[lv1_classname], [1, 1],
+                              activation_fn=None,
+                              normalizer_fn=None,
+                              scope='fc3')
+    if spatial_squeeze and num_classes[lv1_classname] is not None:
+    net = tf.squeeze(net, [1, 2], name='fc3/squeezed')
+    return net
+
+
 def vgg_16(inputs,
 		   classifier,	
            num_classes=1000,
@@ -201,30 +229,10 @@ def vgg_16(inputs,
       net = slim.max_pool2d(net, [2, 2], scope='pool3')
       to_addon = net
 
+      with tf.variable_scope('addon'):
+        with tf.variable_scope('Hat'):
+          
 
-      def addon_net(input_):
-          net = slim.repeat(input_, 3, slim.conv2d, 128, [3, 3], scope='conv1')
-          net = slim.max_pool2d(net, [2, 2], scope='addon/Bottom/pool1')
-          net = slim.repeat(net, 3, slim.conv2d, 64, [3, 3], scope='conv2')
-          net = slim.max_pool2d(net, [2, 2], scope='pool2')
-          # Use conv2d instead of fully_connected layers.
-          net = slim.conv2d(net, 4096, [7, 7], padding=fc_conv_padding, scope='fc1')
-          net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
-                                     scope='dropout1')
-          net = slim.conv2d(net, 4096, [1, 1], scope='fc2')
-          # if global_pool:
-          #   net = tf.reduce_mean(net, [1, 2], keep_dims=True, name='addon/Bottom/global_pool')
-          #   end_points['global_pool'] = net
-          if num_classes[lv1_classname]:
-            net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
-                                       scope='dropout2')
-            net = slim.conv2d(net, num_classes[lv1_classname], [1, 1],
-                                      activation_fn=None,
-                                      normalizer_fn=None,
-                                      scope='fc3')
-            if spatial_squeeze and num_classes[lv1_classname] is not None:
-            net = tf.squeeze(net, [1, 2], name='fc3/squeezed')
-            return net
 
       
 

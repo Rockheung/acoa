@@ -97,15 +97,16 @@ def _get_filenames_and_classes(dataset_dir):
   hierarchy = {}
   class_lv2_names = []
   for class_lv1_name in os.listdir(dataset_dir):
-    hierarchy[class_lv1_name] = [] #Make a level 1 class key on the dictionary
     path1 = os.path.join(dataset_dir, class_lv1_name)
-    for class_lv2_name in os.listdir(path1):
-      hierarchy[class_lv1_name].append(class_lv2_name)
-      #Append subfolder name(level 2 class) to a member of the level 1 class's list
-      path = os.path.join(path1, class_lv2_name)
-      if os.path.isdir(path):
-        directories.append(path)
-        class_lv2_names.append(class_lv2_name)
+    if os.path.isdir(path1)
+      hierarchy[class_lv1_name] = [] #Make a level 1 class key on the dictionary
+      for class_lv2_name in os.listdir(path1):
+        hierarchy[class_lv1_name].append(class_lv2_name)
+        #Append subfolder name(level 2 class) to a member of the level 1 class's list
+        path = os.path.join(path1, class_lv2_name)
+        if os.path.isdir(path):
+          directories.append(path)
+          class_lv2_names.append(class_lv2_name)
 
   photo_filenames = []
   for directory in directories:
