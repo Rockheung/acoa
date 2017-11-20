@@ -93,6 +93,14 @@ tf.app.flags.DEFINE_float(
 FLAGS = tf.app.flags.FLAGS
 
 
+def tf_hash_table(keys, values)
+    tf_keys = tf.constant(keys, tf.int32)
+    tf_values = tf.constant(values, tf.int32)
+   	table = tf.contrib.lookup.HashTable(
+        tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1
+      )
+    return table
+
 def main(_):
   if not FLAGS.dataset_dir:
     raise ValueError('You must supply the dataset directory with --dataset_dir')
@@ -191,7 +199,22 @@ def main(_):
     ####################
     # Define the model #
     ####################
-    logits, _ = network_fn(images)
+    basenet, logits, end_points = network_fn(images)
+
+
+    #########################ACOA###############################
+    ###################ADDONENT applied#########################
+    keys = [0, 1, 2, 3, 4, 5, 6, 7]
+    values_upper_padding = [0, 2, 6, 9, 13, 17, 18]
+    values_lower_padding = [23, 19, 16, 12, 8, 7, 0]
+    upper_table = tf_hash_table(keys, values_upper_padding)
+    lower_table = tf_hash_table(keys, values_lower_padding)
+    basenet_key = tf.argmax(basenet)
+    upper_value = upper_table(basenet_key)
+    lower_value = lower_table(basenet_key)
+
+    preds = tf.concat([tf.zeros(upper_value, tf.int32) ,  logits[upper_value:25-lower_value], tf.zeros(lower_value, tf.int32)], 0)
+
 
     if FLAGS.moving_average_decay:
       variable_averages = tf.train.ExponentialMovingAverage(
@@ -202,7 +225,7 @@ def main(_):
     else:
       variables_to_restore = slim.get_variables_to_restore()
 
-    predictions = tf.argmax(logits, 1)
+    predictions = tf.argmax(preds, 1)
     labels = tf.squeeze(labels)
 
     # Define the metrics:
