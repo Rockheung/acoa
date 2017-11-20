@@ -171,7 +171,8 @@ def addon_net(input_, num_of_filer, lv1_num_classes, lv1_classname,
     return net
 
 
-def vgg_16(inputs,	
+def vgg_16(inputs,
+		   classifier,	
            num_classes=1000,
            is_training=True,
            dropout_keep_prob=0.5,
@@ -215,8 +216,7 @@ def vgg_16(inputs,
   #     num_classes[i] = len(data[i])
   # print num_classes
   #    => {'Outer': 3, 'Bottom': 4, 'Hat': 4, 'Top': 4, 'Shoe': 7, 'Suit': 1, 'Dress': 2}
-  print("siblasdakgfljfdklsgjdfklsgjdflsgjokldfsg")
-  print(num_classes)
+
   lv1_num_classes = {'Outer': 3, 'Bottom': 4, 'Hat': 4, 'Top': 4, 'Shoe': 7, 'Suit': 1, 'Dress': 2}
 
   with tf.variable_scope(scope, 'vgg_16', [inputs]) as sc:
@@ -231,24 +231,6 @@ def vgg_16(inputs,
       net = slim.repeat(net, 3, slim.conv2d, 256, [3, 3], scope='conv3')
       net = slim.max_pool2d(net, [2, 2], scope='pool3')
       to_addon = net
-
-      with tf.variable_scope('addon'):
-        with tf.variable_scope('Hat'):
-          hat = addon_net(to_addon, [128, 64], lv1_num_classes, 'Hat')
-        with tf.variable_scope('Dress'):
-          Dress = addon_net(to_addon, [128, 64], lv1_num_classes, 'Dress')
-        with tf.variable_scope('Top'):
-          Top = addon_net(to_addon, [128, 64], lv1_num_classes, 'Top')
-        with tf.variable_scope('Shoe'):
-          Shoe = addon_net(to_addon, [128, 64], lv1_num_classes, 'Shoe')  
-        with tf.variable_scope('Bottom'):
-          Bottom = addon_net(to_addon, [128, 64], lv1_num_classes, 'Bottom')
-        with tf.variable_scope('Suit'):
-          Suit = addon_net(to_addon, [128, 64], lv1_num_classes, 'Suit')  
-        with tf.variable_scope('Outer'):
-          Outer = addon_net(to_addon, [128, 64], lv1_num_classes, 'Outer')
-        from_addon = tf.concat([hat, Dress, Top, Shoe, Bottom, Suit, Outer], 1, name='concat')    
-
 
       net = slim.repeat(net, 3, slim.conv2d, 512, [3, 3], scope='conv4')
       net = slim.max_pool2d(net, [2, 2], scope='pool4')
@@ -276,6 +258,24 @@ def vgg_16(inputs,
         if spatial_squeeze and num_classes is not None:
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
+
+    with tf.variable_scope('addon'):
+      with tf.variable_scope('Hat'):
+          hat = addon_net(to_addon, [128, 64], lv1_num_classes, 'Hat')
+      with tf.variable_scope('Dress'):
+          Dress = addon_net(to_addon, [128, 64], lv1_num_classes, 'Dress')
+      with tf.variable_scope('Top'):
+          Top = addon_net(to_addon, [128, 64], lv1_num_classes, 'Top')
+      with tf.variable_scope('Shoe'):
+          Shoe = addon_net(to_addon, [128, 64], lv1_num_classes, 'Shoe')  
+      with tf.variable_scope('Bottom'):
+          Bottom = addon_net(to_addon, [128, 64], lv1_num_classes, 'Bottom')
+      with tf.variable_scope('Suit'):
+          Suit = addon_net(to_addon, [128, 64], lv1_num_classes, 'Suit')  
+      with tf.variable_scope('Outer'):
+          Outer = addon_net(to_addon, [128, 64], lv1_num_classes, 'Outer')
+      from_addon = tf.concat([hat, Dress, Top, Shoe, Bottom, Suit, Outer], 1, name='concat')  
+
       return net, from_addon, end_points
 vgg_16.default_image_size = 224
 
