@@ -128,8 +128,7 @@ def get_network_fn(name, num_classes, weight_decay=0.0, is_training=False):
   Raises:
     ValueError: If network `name` is not recognized.
   """
-  print("sibal alriagio~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  print(num_classes)
+
   if name not in networks_map:
     raise ValueError('Name of network unknown %s' % name)
   func = networks_map[name]

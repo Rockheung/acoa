@@ -215,8 +215,6 @@ def vgg_16(inputs,
   #     num_classes[i] = len(data[i])
   # print num_classes
   #    => {'Outer': 3, 'Bottom': 4, 'Hat': 4, 'Top': 4, 'Shoe': 7, 'Suit': 1, 'Dress': 2}
-  print("siblasdakgfljfdklsgjdfklsgjdflsgjokldfsg")
-  print(num_classes)
   lv1_num_classes = {'Outer': 3, 'Bottom': 4, 'Hat': 4, 'Top': 4, 'Shoe': 7, 'Suit': 1, 'Dress': 2}
 
   with tf.variable_scope(scope, 'vgg_16', [inputs]) as sc:
