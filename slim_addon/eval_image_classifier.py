@@ -206,43 +206,23 @@ def main(_):
 
     upper_table = tf_hash_table(keys, values_upper_padding)
     lower_table = tf_hash_table(keys, values_lower_padding)
-    basenet_key = tf.argmax(basenet, 1)
+    basenet_key = tf.argmax(basenet, 1) # rank1
 
     basenet_key = tf.cast(basenet_key, tf.int64)
 
     upper_value = upper_table.lookup(basenet_key)
-
     upper_value = tf.cast(upper_value, tf.int32)
     lower_value = lower_table.lookup(basenet_key)
     lower_value = tf.cast(lower_value, tf.int32)
-    # x =tf.zeros(upper_value)
-    # y = tf.zeros(lower_value)
 
-    # print('hihi')
-    # print(basenet.shape)
-    # print(logits.shape)
-    print(lower_value.shape)
-    print(upper_value.shape)
-    paddings = tf.concat(upper_value, lower_value)
-    paddings = tf.expand_dims(paddings, 0)
-    real = logits[upper_value[0]:25-lower_value[0]]
-
-    preds = tf.pad(real, paddings, "CONSTANT")
-    # tmp = tf.zeros([1, 25])
-    # print(tmp.shape)
-    # print(logits.shape)
-    # tmp[upper_value:tf.constant(25)-lower_value] = logits[upper_value:tf.constant(25)-lower_value]
-    # preds = tmp
-
-
-
-
-
-
-
-
-
-    #preds = tf.concat([ tmp,logits[0][upper_value:25-lower_value]], 1)
+    with tf.Session() as sess:
+        for i in range(0, lower_value.shape[0]):
+            pad1 = tf.zeros([upper_value[i]], tf.float32)
+            pad2 = tf.zeros([lower_value[i]], tf.float32)
+            cropped_net = logits[i, upper_value[i]:25-lower_value[i]]
+            tmp = tf.concat([pad1, cropped_net, pad2], 0)
+            preds = tf.assign(logits[i], tmp)
+            sess.run(preds)
 
 
     if FLAGS.moving_average_decay:
