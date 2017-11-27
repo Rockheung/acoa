@@ -22,6 +22,7 @@ import functools
 import tensorflow as tf
 
 from nets import alexnet
+from nets import addonnet
 from nets import cifarnet
 from nets import inception
 from nets import lenet
@@ -38,7 +39,11 @@ slim = tf.contrib.slim
 networks_map = {'alexnet_v2': alexnet.alexnet_v2,
                 'cifarnet': cifarnet.cifarnet,
                 'overfeat': overfeat.overfeat,
+<<<<<<< HEAD
                 'addon' : addonnet.vgg_16,
+=======
+                'addonnet' : addonnet.vgg_16,
+>>>>>>> 8571ac13b02b9895d2d14e422c3491a17d3e8543
                 'vgg_a': vgg.vgg_a,
                 'vgg_16': vgg.vgg_16,
                 'vgg_19': vgg.vgg_19,
@@ -68,7 +73,11 @@ networks_map = {'alexnet_v2': alexnet.alexnet_v2,
 arg_scopes_map = {'alexnet_v2': alexnet.alexnet_v2_arg_scope,
                   'cifarnet': cifarnet.cifarnet_arg_scope,
                   'overfeat': overfeat.overfeat_arg_scope,
+<<<<<<< HEAD
                   'addon' : addonnet.vgg_arg_scope,
+=======
+                  'addonnet' : addonnet.vgg_arg_scope,
+>>>>>>> 8571ac13b02b9895d2d14e422c3491a17d3e8543
                   'vgg_a': vgg.vgg_arg_scope,
                   'vgg_16': vgg.vgg_arg_scope,
                   'vgg_19': vgg.vgg_arg_scope,
@@ -128,8 +137,12 @@ def get_network_fn(name, num_classes, weight_decay=0.0, is_training=False):
   Raises:
     ValueError: If network `name` is not recognized.
   """
+<<<<<<< HEAD
   print "hihihi"
   print name
+=======
+
+>>>>>>> 8571ac13b02b9895d2d14e422c3491a17d3e8543
   if name not in networks_map:
     raise ValueError('Name of network unknown %s' % name)
   func = networks_map[name]

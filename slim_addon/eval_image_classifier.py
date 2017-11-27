@@ -93,6 +93,11 @@ tf.app.flags.DEFINE_float(
 FLAGS = tf.app.flags.FLAGS
 
 
+
+def tf_hash_table(keys, values):
+    table = tf.contrib.lookup.HashTable(tf.contrib.lookup.KeyValueTensorInitializer(keys, values, tf.int64, tf.int64), -1)
+    return table
+
 def main(_):
   if not FLAGS.dataset_dir:
     raise ValueError('You must supply the dataset directory with --dataset_dir')
@@ -191,7 +196,54 @@ def main(_):
     ####################
     # Define the model #
     ####################
-    logits, _ = network_fn(images)
+    basenet, logits, end_points = network_fn(images)
+    #########################ACOA###############################
+    ###################ADDONENT applied#########################
+    keys = [0, 1, 2, 3, 4, 5, 6]
+
+    values_upper_padding = [6, 13, 0, 9, 18, 17, 2]
+    values_lower_padding = [16, 8, 23, 12, 0, 7, 19]
+
+    upper_table = tf_hash_table(keys, values_upper_padding)
+    lower_table = tf_hash_table(keys, values_lower_padding)
+    basenet_key = tf.argmax(basenet, 1)
+
+    basenet_key = tf.cast(basenet_key, tf.int64)
+
+    upper_value = upper_table.lookup(basenet_key)
+
+    upper_value = tf.cast(upper_value, tf.int32)
+    lower_value = lower_table.lookup(basenet_key)
+    lower_value = tf.cast(lower_value, tf.int32)
+    # x =tf.zeros(upper_value)
+    # y = tf.zeros(lower_value)
+
+    # print('hihi')
+    # print(basenet.shape)
+    # print(logits.shape)
+    print(lower_value.shape)
+    print(upper_value.shape)
+    paddings = tf.concat(upper_value, lower_value)
+    paddings = tf.expand_dims(paddings, 0)
+    real = logits[upper_value[0]:25-lower_value[0]]
+
+    preds = tf.pad(real, paddings, "CONSTANT")
+    # tmp = tf.zeros([1, 25])
+    # print(tmp.shape)
+    # print(logits.shape)
+    # tmp[upper_value:tf.constant(25)-lower_value] = logits[upper_value:tf.constant(25)-lower_value]
+    # preds = tmp
+
+
+
+
+
+
+
+
+
+    #preds = tf.concat([ tmp,logits[0][upper_value:25-lower_value]], 1)
+
 
     if FLAGS.moving_average_decay:
       variable_averages = tf.train.ExponentialMovingAverage(
@@ -202,7 +254,7 @@ def main(_):
     else:
       variables_to_restore = slim.get_variables_to_restore()
 
-    predictions = tf.argmax(logits, 1)
+    predictions = tf.argmax(preds, 1)
     labels = tf.squeeze(labels)
 
     # Define the metrics:

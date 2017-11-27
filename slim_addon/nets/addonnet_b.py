@@ -140,6 +140,8 @@ def vgg_a(inputs,
       return net, end_points
 vgg_a.default_image_size = 224
 
+
+
 def addon_net(input_, num_of_filer, lv1_num_classes, lv1_classname, 
                 is_training=True, 
                 dropout_keep_prob=0.5, 
@@ -213,6 +215,8 @@ def vgg_16(inputs,
   #     num_classes[i] = len(data[i])
   # print num_classes
   #    => {'Outer': 3, 'Bottom': 4, 'Hat': 4, 'Top': 4, 'Shoe': 7, 'Suit': 1, 'Dress': 2}
+  print("siblasdakgfljfdklsgjdfklsgjdflsgjokldfsg")
+  print(num_classes)
   lv1_num_classes = {'Outer': 3, 'Bottom': 4, 'Hat': 4, 'Top': 4, 'Shoe': 7, 'Suit': 1, 'Dress': 2}
 
   with tf.variable_scope(scope, 'vgg_16', [inputs]) as sc:
@@ -229,21 +233,21 @@ def vgg_16(inputs,
       to_addon = net
 
       with tf.variable_scope('addon'):
-        with tf.variable_scope('Dress'):
-          a1 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Dress')
         with tf.variable_scope('Hat'):
-          a2 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Hat')
-        with tf.variable_scope('Outer'):
-          a3 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Outer')
+          hat = addon_net(to_addon, [128, 64], lv1_num_classes, 'Hat')
+        with tf.variable_scope('Dress'):
+          Dress = addon_net(to_addon, [128, 64], lv1_num_classes, 'Dress')
         with tf.variable_scope('Top'):
-          a4 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Top')  
-        with tf.variable_scope('Bottom'):
-          a5 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Bottom')
-        with tf.variable_scope('Suit'):
-          a6 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Suit')  
+          Top = addon_net(to_addon, [128, 64], lv1_num_classes, 'Top')
         with tf.variable_scope('Shoe'):
-          a7 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Shoe')
-        from_addon = tf.concat([a1, a2, a3, a4, a5, a6, a7], 1, name='concat')    
+          Shoe = addon_net(to_addon, [128, 64], lv1_num_classes, 'Shoe')  
+        with tf.variable_scope('Bottom'):
+          Bottom = addon_net(to_addon, [128, 64], lv1_num_classes, 'Bottom')
+        with tf.variable_scope('Suit'):
+          Suit = addon_net(to_addon, [128, 64], lv1_num_classes, 'Suit')  
+        with tf.variable_scope('Outer'):
+          Outer = addon_net(to_addon, [128, 64], lv1_num_classes, 'Outer')
+        from_addon = tf.concat([hat, Dress, Top, Shoe, Bottom, Suit, Outer], 1, name='concat')    
 
 
       net = slim.repeat(net, 3, slim.conv2d, 512, [3, 3], scope='conv4')

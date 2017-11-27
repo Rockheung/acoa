@@ -1,7 +1,7 @@
 ACOASET=$HOME/acoa_dataset
-DATASET_DIR=${ACOASET}/dataset/class_7
-TRAIN_DIR=${ACOASET}/weight/11_class_25/train_fc8_fc7_fc6_conv5_conv4
-EVAL_DIR=${ACOASET}/weight/11_class_25/eval_fc8_fc7_fc6_conv5_conv4
+DATASET_DIR=${ACOASET}/dataset/$1
+TRAIN_DIR=$3
+EVAL_DIR=${PWD}
 CHECKPOINT_PATH=${ACOASET}/checkpoints/vgg_16.ckpt
 CKPT=${ACOASET}/train_fc8/ckpt-291715
 #CKPT=${ACOASET}/train_full/ckpt55
@@ -15,4 +15,4 @@ python ${SLIM_PATH}/eval_image_classifier.py \
     --eval_dir=${EVAL_DIR} \
     --batch_size 16 \
     --eval_interval_secs 60 \
-    --hierarchy_level 2
+    --hierarchy_level $2
