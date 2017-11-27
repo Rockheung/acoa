@@ -138,7 +138,7 @@ def main(_):
     ####################
     network_fn = nets_factory.get_network_fn(
         FLAGS.model_name,
-        num_classes=(dataset.num_classes - FLAGS.labels_offset),
+        num_classes=7,
         is_training=False)
 
     ##############################################################
@@ -154,9 +154,9 @@ def main(_):
 
 
     ############################ACOA################################
-    #Label conversion following the FLAGS.hierarchy_level
+    # Label conversion following the FLAGS.hierarchy_level
 
-    #if hierarchy_level was chosen as 1, our label(fine grained) 
+    # if hierarchy_level was chosen as 1, our label(fine grained) 
     # will be translated to level 1 class(coarse grained) 
     condition = tf.constant(FLAGS.hierarchy_level)
 
@@ -173,7 +173,6 @@ def main(_):
     label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
 
     ################################################################
-
 
     #####################################
     # Select the preprocessing function #
@@ -197,6 +196,20 @@ def main(_):
     # Define the model #
     ####################
     basenet, logits, end_points = network_fn(images)
+
+
+
+    if FLAGS.moving_average_decay:
+      variable_averages = tf.train.ExponentialMovingAverage(
+          FLAGS.moving_average_decay, tf_global_step)
+      variables_to_restore = variable_averages.variables_to_restore(
+          slim.get_model_variables())
+      variables_to_restore[tf_global_step.op.name] = tf_global_step
+    else:
+      variables_to_restore = slim.get_variables_to_restore()
+
+
+
     #########################ACOA###############################
     ###################ADDONENT applied#########################
     keys = [0, 1, 2, 3, 4, 5, 6]
@@ -215,25 +228,14 @@ def main(_):
     lower_value = lower_table.lookup(basenet_key)
     lower_value = tf.cast(lower_value, tf.int32)
 
-    with tf.Session() as sess:
-        for i in range(0, lower_value.shape[0]):
-            pad1 = tf.zeros([upper_value[i]], tf.float32)
-            pad2 = tf.zeros([lower_value[i]], tf.float32)
-            cropped_net = logits[i, upper_value[i]:25-lower_value[i]]
-            tmp = tf.concat([pad1, cropped_net, pad2], 0)
-            preds = tf.assign(logits[i], tmp)
-            sess.run(preds)
+    def lambda_concat(upper_value, lower_value, net):
+       pad1 = tf.zeros([upper_value], tf.float32)
+       pad2 = tf.zeros([lower_value], tf.float32)
+       cropped_net = net[upper_value: 25 -lower_value]
+       return tf.concat([pad1, cropped_net, pad2], 0)
 
-
-    if FLAGS.moving_average_decay:
-      variable_averages = tf.train.ExponentialMovingAverage(
-          FLAGS.moving_average_decay, tf_global_step)
-      variables_to_restore = variable_averages.variables_to_restore(
-          slim.get_model_variables())
-      variables_to_restore[tf_global_step.op.name] = tf_global_step
-    else:
-      variables_to_restore = slim.get_variables_to_restore()
-
+    preds = tf.map_fn(lambda x : lambda_concat(x[0], x[1], x[2]), (upper_value, lower_value, logits), dtype=tf.float32)
+    print(preds.shape)
     predictions = tf.argmax(preds, 1)
     labels = tf.squeeze(labels)
 
@@ -241,7 +243,7 @@ def main(_):
     names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
         'Accuracy': slim.metrics.streaming_accuracy(predictions, labels),
         'Recall_5': slim.metrics.streaming_recall_at_k(
-            logits, labels, 5),
+            preds, labels, 5),
     })
 
     # Print the summaries to screen.
@@ -274,15 +276,17 @@ def main(_):
     config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
     config.gpu_options.allow_growth = True
 
-    slim.evaluation.evaluation_loop(
+    slim.evaluation.evaluate_once(
         master=FLAGS.master,
-        checkpoint_dir=FLAGS.checkpoint_path,
+        checkpoint_path=checkpoint_path,
         logdir=FLAGS.eval_dir,
         num_evals=num_batches,
         eval_op=list(names_to_updates.values()),
-        variables_to_restore=variables_to_restore,
-        eval_interval_secs = FLAGS.eval_interval_secs,
-        session_config=config)
+        variables_to_restore=variables_to_restore)
+
+
+
+
 
 if __name__ == '__main__':
   tf.app.run()

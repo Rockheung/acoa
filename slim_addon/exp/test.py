@@ -41,16 +41,28 @@ sess.run(init)
 # print sess.run(tf.zeros([lower_value[0]], tf.float32))
 # print sess.run(net[0, lower_value[0]:])
 
-for i in range(0, lower_value.shape[0]):
-    padding = tf.zeros([lower_value[i]], tf.int32)
-    cropped_net = net[i, lower_value[i]:]
-    #print sess.run([padding, cropped_net])
-    tmp = tf.concat([padding, cropped_net], 0)
-    k = tf.assign(net[i], tmp)
-#    tmp = tf.concat([tf.zeros([lower_value[i]], tf.float32) ,net[i, lower_value[i]:]], 0)
-    sess.run(k)
+def lambda_concat(lower_value, net):
+    padding = tf.zeros([lower_value], tf.int32)
+    cropped_net = net[lower_value:]
+    return tf.concat([padding, cropped_net], 0)
+
+k = tf.map_fn(lambda x: lambda_concat(x[0], x[1]), (lower_value, net), dtype=tf.int32)
+
+
+# for i in range(0, lower_value.shape[0]):
+#     padding = tf.zeros([lower_value[i]], tf.int32)
+#     cropped_net = net[i, lower_value[i]:]
+#     #print sess.run([padding, cropped_net])
+#     tmp = tf.concat([padding, cropped_net], 0)
+#     k = tf.assign(net[i], tmp)
+# #    tmp = tf.concat([tf.zeros([lower_value[i]], tf.float32) ,net[i, lower_value[i]:]], 0)
+#     sess.run(k)
 
 print sess.run(k)
+
+#k = tf.map_fn(a, )
+
+
 
 
 
