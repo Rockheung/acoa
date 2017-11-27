@@ -19,11 +19,13 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-
+import json
 from datasets import dataset_factory
 from deployment import model_deploy
 from nets import nets_factory
 from preprocessing import preprocessing_factory
+import os
+from tensorflow.python.framework import dtypes
 
 slim = tf.contrib.slim
 
@@ -69,9 +71,6 @@ tf.app.flags.DEFINE_integer(
 
 tf.app.flags.DEFINE_integer(
     'task', 0, 'Task id of the replica running the training.')
-
-tf.app.flags.DEFINE_float(
-    'per_process_gpu_memory_fraction', 1, 'A value between 0 and 1 that indicates what fraction of the available GPU memory to pre-allocate for each process')
 
 ######################
 # Optimization Flags #
@@ -197,6 +196,9 @@ tf.app.flags.DEFINE_integer(
 
 tf.app.flags.DEFINE_integer('max_number_of_steps', None,
                             'The maximum number of training steps.')
+
+tf.app.flags.DEFINE_integer('hierarchy_level', 1,
+                            'what class level do you want to use for train')
 
 #####################
 # Fine-Tuning Flags #
@@ -408,9 +410,35 @@ def main(_):
     dataset = dataset_factory.get_dataset(
         FLAGS.dataset_name, FLAGS.dataset_split_name, FLAGS.dataset_dir)
 
+
+    ############################ACOA################################
+
+    ############################
+    # Select dataset hierarchy #
+    ############################
+    file_path = os.path.join(FLAGS.dataset_dir, 'lv2_id_to_lv1_id.json')
+    _file = open(file_path).read()
+    lv2_id_to_lv1_id = json.loads(_file)
+    lv2_id_to_lv1_id = {int(k):int(v) for k,v in lv2_id_to_lv1_id.items()}
+    if FLAGS.hierarchy_level == 1:
+      #level 1 class
+      print("level 1 class")
+      dataset.num_classes = len(set(lv2_id_to_lv1_id.values()))
+      #determine the number of the last layer's node
+      print('dataset_num_classes', dataset.num_classes)
+    elif FLAGS.hierarchy_level == 2:
+      print("level 2 class")  
+    else :
+      print("error")
+      return 0
+
+    #################################################################
+
+
     ######################
     # Select the network #
     ######################
+
     network_fn = nets_factory.get_network_fn(
         FLAGS.model_name,
         num_classes=(dataset.num_classes - FLAGS.labels_offset),
@@ -436,20 +464,43 @@ def main(_):
           common_queue_min=10 * FLAGS.batch_size)
       [image, label] = provider.get(['image', 'label'])
       label -= FLAGS.labels_offset
-
       train_image_size = FLAGS.train_image_size or network_fn.default_image_size
 
-      image = image_preprocessing_fn(image, train_image_size, train_image_size)
 
+      ############################ACOA################################
+      #Label conversion following the FLAGS.hierarchy_level
+
+      #if hierarchy_level was chosen as 1, our label(fine grained) 
+      # will be translated to level 1 class(coarse grained) 
+      condition = tf.constant(FLAGS.hierarchy_level)
+
+      keys = tf.constant(lv2_id_to_lv1_id.keys(), dtypes.int64)
+      values = tf.constant(lv2_id_to_lv1_id.values(), dtypes.int64)
+
+      # a hash table is defined for translating
+      table = tf.contrib.lookup.HashTable(
+      tf.contrib.lookup.KeyValueTensorInitializer(keys, values, dtypes.int64, dtypes.int64), -1
+        )
+      out = table.lookup(label)
+
+      #conditional operator in tensorflow
+      label = tf.cond(tf.equal(condition, tf.constant(1)), lambda : out, lambda : label)
+
+      ################################################################
+
+
+      image = image_preprocessing_fn(image, train_image_size, train_image_size)
       images, labels = tf.train.batch(
           [image, label],
           batch_size=FLAGS.batch_size,
           num_threads=FLAGS.num_preprocessing_threads,
           capacity=5 * FLAGS.batch_size)
+
       labels = slim.one_hot_encoding(
           labels, dataset.num_classes - FLAGS.labels_offset)
       batch_queue = slim.prefetch_queue.prefetch_queue(
           [images, labels], capacity=2 * deploy_config.num_clones)
+
 
     ####################
     # Define the model #
@@ -555,14 +606,6 @@ def main(_):
     # Merge all summaries together.
     summary_op = tf.summary.merge(list(summaries), name='summary_op')
 
-    # Set GPU
-    # A value between 0 and 1 that indicates what fraction of the
-    # available GPU memory to pre-allocate for each process.  1 means
-    # to pre-allocate all of the GPU memory, 0.5 means the process
-    # allocates ~50% of the available GPU memory.
-    config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
-
 
     ###########################
     # Kicks off the training. #
@@ -578,8 +621,7 @@ def main(_):
         log_every_n_steps=FLAGS.log_every_n_steps,
         save_summaries_secs=FLAGS.save_summaries_secs,
         save_interval_secs=FLAGS.save_interval_secs,
-        sync_optimizer=optimizer if FLAGS.sync_replicas else None,
-        session_config=config if FLAGS.per_process_gpu_memory_fraction else None)
+        sync_optimizer=optimizer if FLAGS.sync_replicas else None)
 
 
 if __name__ == '__main__':

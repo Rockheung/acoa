@@ -106,6 +106,9 @@ def main(_):
   with tf.Graph().as_default():
     tf_global_step = slim.get_or_create_global_step()
 
+
+  
+
     ######################
     # Select the dataset #
     ######################
@@ -235,9 +238,14 @@ def main(_):
        return tf.concat([pad1, cropped_net, pad2], 0)
 
     preds = tf.map_fn(lambda x : lambda_concat(x[0], x[1], x[2]), (upper_value, lower_value, logits), dtype=tf.float32)
-    print(preds.shape)
+
     predictions = tf.argmax(preds, 1)
     labels = tf.squeeze(labels)
+
+    for v in slim.get_model_variables():
+        print('name = {}, shape = {}'.format(v.name, v.get_shape()))
+
+
 
     # Define the metrics:
     names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
@@ -284,7 +292,10 @@ def main(_):
         eval_op=list(names_to_updates.values()),
         variables_to_restore=variables_to_restore)
 
-
+    # sess = tf.Session()
+    # saver = tf.train.Saver()
+    # saver.restore(sess, "/home/dan/ACOA/Experiment/addon_weight/model.ckpt-121631")
+    # print(sess.run([preds, labels]))
 
 
 

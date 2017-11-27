@@ -230,19 +230,19 @@ def vgg_16(inputs,
 
       with tf.variable_scope('addon'):
         with tf.variable_scope('Dress'):
-          a1 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Dress')
+          a1 = addon_net(to_addon, [128, 128], lv1_num_classes, 'Dress')
         with tf.variable_scope('Hat'):
-          a2 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Hat')
+          a2 = addon_net(to_addon, [128, 128], lv1_num_classes, 'Hat')
         with tf.variable_scope('Outer'):
-          a3 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Outer')
+          a3 = addon_net(to_addon, [128, 128], lv1_num_classes, 'Outer')
         with tf.variable_scope('Top'):
-          a4 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Top')  
+          a4 = addon_net(to_addon, [128, 128], lv1_num_classes, 'Top')  
         with tf.variable_scope('Bottom'):
-          a5 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Bottom')
+          a5 = addon_net(to_addon, [128, 128], lv1_num_classes, 'Bottom')
         with tf.variable_scope('Suit'):
-          a6 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Suit')  
+          a6 = addon_net(to_addon, [128, 128], lv1_num_classes, 'Suit')  
         with tf.variable_scope('Shoe'):
-          a7 = addon_net(to_addon, [128, 64], lv1_num_classes, 'Shoe')
+          a7 = addon_net(to_addon, [128, 128], lv1_num_classes, 'Shoe')
         from_addon = tf.concat([a1, a2, a3, a4, a5, a6, a7], 1, name='concat')    
 
 
