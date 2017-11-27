@@ -142,7 +142,6 @@ vgg_a.default_image_size = 224
 
 
 
-
 def addon_net(input_, num_of_filer = [128, 64], lv1_num_classes, lv1_classname):
   net = slim.repeat(input_, 3, slim.conv2d, num_of_filer[0], [3, 3], scope='conv1')
   net = slim.max_pool2d(net, [2, 2], scope='pool1')
