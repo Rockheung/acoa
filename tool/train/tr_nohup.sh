@@ -17,7 +17,7 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --model_name=vgg_16 \
     --checkpoint_path=${CHECKPOINT_PATH} \
     --batch_size=32 \
-    --save_interval_secs=1800 \
+    --save_interval_secs=180 \
     --save_summaries_secs=60 \
     --learning_rate_decay_factor=0.95 \
     --weight_decay=0.00004 \
