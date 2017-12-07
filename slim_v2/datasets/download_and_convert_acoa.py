@@ -98,7 +98,7 @@ def _get_filenames_and_classes(dataset_dir):
   class_lv2_names = []
   for class_lv1_name in os.listdir(dataset_dir):
     path1 = os.path.join(dataset_dir, class_lv1_name)
-    if os.path.isdir(path1)
+    if os.path.isdir(path1) :
       hierarchy[class_lv1_name] = [] #Make a level 1 class key on the dictionary
       for class_lv2_name in os.listdir(path1):
         hierarchy[class_lv1_name].append(class_lv2_name)
