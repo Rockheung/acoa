@@ -68,6 +68,14 @@ def get_preprocessing(name, is_training=False):
       'vgg_a': vgg_preprocessing,
       'vgg_13': vgg_preprocessing,
       'vgg_16': vgg_preprocessing,
+      'vgg_16_fc_1k_1k': vgg_preprocessing,
+      'vgg_16_fc_1k_2k': vgg_preprocessing,
+      'vgg_16_fc_1k_4k': vgg_preprocessing,
+      'vgg_16_fc_2k_1k': vgg_preprocessing,
+      'vgg_16_fc_2k_2k': vgg_preprocessing,
+      'vgg_16_fc_2k_4k': vgg_preprocessing,
+      'vgg_16_fc_4k_1k': vgg_preprocessing,
+      'vgg_16_fc_4k_2k': vgg_preprocessing,
       'vgg_19': vgg_preprocessing,
   }
 
