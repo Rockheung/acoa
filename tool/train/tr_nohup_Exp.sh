@@ -1,14 +1,14 @@
 # HOW TO USE
 # go to the location which you want to save train weight and 
-# $ nohup sh ~/Downloads/acoa/tool/eval/ev_fc8_fc7_fc6_conv5_conv4.sh class_3 2 ~/acoa_dataset/weight/5_class_13/train_fc8_fc7_fc6_conv5_conv4/ &
-# $ nohup sh {run this script} {tf class folder} {hierachy level}
-# and you can monitor with this command
+# $ nohup sh ~/Downloads/acoa/tool/train/tr_nohup_Exp.sh Bottom
+# $ nohup sh {this script} {tf class folder}
+# and you can monitor with this command 
 # $ tail -f nohup.out
 ACOASET=$HOME/acoa_dataset
 DATASET_DIR=${ACOASET}/dataset/$1
 TRAIN_DIR=${PWD}
 CHECKPOINT_PATH=${ACOASET}/checkpoints/vgg_16.ckpt
-SLIM_PATH=$HOME/Downloads/acoa/slim_addon_v2
+SLIM_PATH=$HOME/Downloads/acoa/slim_Exp
 python ${SLIM_PATH}/train_image_classifier.py \
     --train_dir=${TRAIN_DIR} \
     --dataset_dir=${DATASET_DIR} \

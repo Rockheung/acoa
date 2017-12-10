@@ -1,7 +1,7 @@
 # HOW TO USE
 # go to the location which you wnat to save evaluaion result and 
-# $ nohup sh ~/Downloads/acoa/tool/eval/ev_fc8_fc7_fc6_conv5_conv4.sh class_3 2 ~/acoa_dataset/weight/5_class_13/train_fc8_fc7_fc6_conv5_conv4/ &
-# $ nohup sh {run this script} {tf class folder} {hierachy level} {train_dir path} &
+# $ nohup sh ~/Downloads/acoa/tool/eval/ev_nohup_Exp.sh Bottom ~/acoa_dataset/weight/Bottom/Exp/train &
+# $ nohup sh {this script} {tf class folder} {train_dir path} &
 # and you can monitor with this command
 # $ tail -f nohup.out
 ACOASET=$HOME/acoa_dataset
