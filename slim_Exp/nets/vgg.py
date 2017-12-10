@@ -35,6 +35,14 @@ Usage:
 
 @@vgg_a
 @@vgg_13
+@@vgg_16_fc_1k_1k
+@@vgg_16_fc_1k_2k
+@@vgg_16_fc_1k_4k
+@@vgg_16_fc_2k_1k
+@@vgg_16_fc_2k_2k
+@@vgg_16_fc_2k_4k
+@@vgg_16_fc_4k_1k
+@@vgg_16_fc_4k_2k
 @@vgg_16
 @@vgg_19
 """
@@ -295,7 +303,7 @@ def vgg_16_fc_1k_1k(inputs,
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
       return net, end_points
-vgg_16.default_image_size = 224
+vgg_16_fc_1k_1k.default_image_size = 224
 
 
 def vgg_16_fc_1k_2k(inputs,
@@ -373,7 +381,7 @@ def vgg_16_fc_1k_2k(inputs,
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
       return net, end_points
-vgg_16.default_image_size = 224
+vgg_16_fc_1k_2k.default_image_size = 224
 
 
 def vgg_16_fc_1k_4k(inputs,
@@ -451,7 +459,7 @@ def vgg_16_fc_1k_4k(inputs,
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
       return net, end_points
-vgg_16.default_image_size = 224
+vgg_16_fc_1k_4k.default_image_size = 224
 
 
 def vgg_16_fc_2k_1k(inputs,
@@ -529,7 +537,7 @@ def vgg_16_fc_2k_1k(inputs,
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
       return net, end_points
-vgg_16.default_image_size = 224
+vgg_16_fc_2k_1k.default_image_size = 224
 
 
 def vgg_16_fc_2k_2k(inputs,
@@ -607,7 +615,7 @@ def vgg_16_fc_2k_2k(inputs,
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
       return net, end_points
-vgg_16.default_image_size = 224
+vgg_16_fc_2k_2k.default_image_size = 224
 
 
 def vgg_16_fc_2k_4k(inputs,
@@ -685,7 +693,7 @@ def vgg_16_fc_2k_4k(inputs,
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
       return net, end_points
-vgg_16.default_image_size = 224
+vgg_16_fc_2k_4k.default_image_size = 224
 
 
 def vgg_16_fc_4k_1k(inputs,
@@ -763,7 +771,7 @@ def vgg_16_fc_4k_1k(inputs,
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
       return net, end_points
-vgg_16.default_image_size = 224
+vgg_16_fc_4k_1k.default_image_size = 224
 
 
 def vgg_16_fc_4k_2k(inputs,
@@ -841,7 +849,7 @@ def vgg_16_fc_4k_2k(inputs,
           net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
         end_points[sc.name + '/fc8'] = net
       return net, end_points
-vgg_16.default_image_size = 224
+vgg_16_fc_4k_2k.default_image_size = 224
 
 
 def vgg_16(inputs,
