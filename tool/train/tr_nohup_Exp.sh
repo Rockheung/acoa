@@ -1,6 +1,6 @@
 # HOW TO USE
 # go to the location which you want to save train weight and 
-# $ nohup sh ~/Downloads/acoa/tool/train/tr_nohup_Exp.sh Bottom
+# $ nohup sh ~/Downloads/acoa/tool/train/tr_nohup_Exp.sh Bottom vgg_16_fc_xk_xk
 # $ nohup sh {this script} {tf class folder}
 # and you can monitor with this command 
 # $ tail -f nohup.out
@@ -14,7 +14,7 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --dataset_dir=${DATASET_DIR} \
     --dataset_name=acoa \
     --dataset_split_name=train \
-    --model_name=vgg_16_2k_2k \
+    --model_name=$2 \
     --checkpoint_path=${CHECKPOINT_PATH} \
     --batch_size=32 \
     --save_interval_secs=600 \
