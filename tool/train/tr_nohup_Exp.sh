@@ -14,7 +14,7 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --dataset_dir=${DATASET_DIR} \
     --dataset_name=acoa \
     --dataset_split_name=train \
-    --model_name=vgg_13 \
+    --model_name=vgg_16_2k_2k \
     --checkpoint_path=${CHECKPOINT_PATH} \
     --batch_size=32 \
     --save_interval_secs=600 \
@@ -23,6 +23,6 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --weight_decay=0.00004 \
     --log_every_n_steps=10 \
     --optimizer=adam \
-    --checkpoint_exclude_scopes=vgg_16/fc8 \
-    --trainable_scopes=vgg_16/fc8,vgg_16/fc7,vgg_16/fc6,vgg_16/conv4 \
+    --checkpoint_exclude_scopes=vgg_16/fc8,vgg_16/fc7,vgg_16/fc6 \
+    --trainable_scopes=vgg_16/fc8,vgg_16/fc7,vgg_16/fc6,vgg_16/conv5,vgg_16/conv4 \
     --max_number_of_steps 100000
