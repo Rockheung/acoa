@@ -35,6 +35,7 @@ Usage:
 
 @@vgg_a
 @@vgg_13
+@@vgg_16
 @@vgg_16_fc_1k_1k
 @@vgg_16_fc_1k_2k
 @@vgg_16_fc_1k_4k
