@@ -76,6 +76,7 @@ def get_preprocessing(name, is_training=False):
       'vgg_16_fc_2k_4k': vgg_preprocessing,
       'vgg_16_fc_4k_1k': vgg_preprocessing,
       'vgg_16_fc_4k_2k': vgg_preprocessing,
+      'vgg_16_fc9': vgg_preprocessing,
       'vgg_19': vgg_preprocessing,
   }
 
