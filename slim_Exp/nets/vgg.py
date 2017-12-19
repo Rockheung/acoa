@@ -1001,13 +1001,13 @@ def vgg_16_fc9(inputs,
                           activation_fn=None,
                           normalizer_fn=None,
                           scope='fc8')
-        if spatial_squeeze and 1000 is not None:
-          net = tf.squeeze(net, [1, 2], name='fc8/squeezed')
-        end_points[sc.name + '/fc8'] = net
       net = slim.conv2d(net, num_classes, [1, 1],
                           activation_fn=None,
                           normalizer_fn=None,
                           scope='fc9')
+      if spatial_squeeze and 1000 is not None:
+        net = tf.squeeze(net, [1, 2], name='fc9/squeezed')
+        end_points[sc.name + '/fc9'] = net      
       return net, end_points
 vgg_16_fc9.default_image_size = 224
 

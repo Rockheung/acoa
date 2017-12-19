@@ -31,9 +31,9 @@ slim = tf.contrib.slim
 
 _FILE_PATTERN = 'acoa_%s_*.tfrecord'
 
-SPLITS_TO_SIZES = {'train': 1894, 'validation': 473}
+SPLITS_TO_SIZES = {'train': 4173, 'validation': 1043}
 
-_NUM_CLASSES = 4
+_NUM_CLASSES = 7
 
 _ITEMS_TO_DESCRIPTIONS = {
     'image': 'A color image of varying size.',

@@ -1,13 +1,14 @@
 # HOW TO USE
 # go to the location which you want to save train weight and 
-# $ nohup sh ~/ACOA/acoa/tool/train/tr_nohup_Exp_titan.sh Bottom vgg_16_fc_xk_xk xk_xk
+# $ nohup sh ~/ACOA/acoa/tool/train/tr_nohup_mobile.sh Shoe mobilenet_v1 mobile_train
 # $ nohup sh {this script} {tf class folder}
 # and you can monitor with this command 
 # $ tail -f nohup.out
+#    --trainable_scopes=vgg_16/fc9 \
 ACOASET=$HOME/ACOA
 DATASET_DIR=${ACOASET}/dataset/$1
 TRAIN_DIR=${ACOASET}/Experiment/$3
-CHECKPOINT_PATH=${ACOASET}/Experiment/nets/vgg_16.ckpt
+CHECKPOINT_PATH=${ACOASET}/Experiment/nets/mobilenet_v1/mobilenet_v1_1.0_224.ckpt
 SLIM_PATH=$HOME/ACOA/acoa/slim_Exp
 python ${SLIM_PATH}/train_image_classifier.py \
     --train_dir=${TRAIN_DIR} \
@@ -25,6 +26,5 @@ python ${SLIM_PATH}/train_image_classifier.py \
     --weight_decay=0.00004 \
     --log_every_n_steps=10 \
     --optimizer=adam \
-    --checkpoint_exclude_scopes=vgg_16/fc9 \
-    --trainable_scopes=vgg_16/fc9 \
+    --checkpoint_exclude_scopes=MobilenetV1/Logits/Conv2d_1c_1x1 \
     --max_number_of_steps 1000000
