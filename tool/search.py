@@ -27,9 +27,9 @@ def search(dirname, ext, result =[] ):
 #                print result
     return result
 
-path = '/home/rockheung/Downloads/final_data_v2'
+path = '/home/rockheung/acoa_dataset/final_data_v2/Shoe'
 count = countf(path, '.JPEG')
-_RATIO_VALIDATION = 0.2
+_RATIO_VALIDATION = 1 - 0.618
 _SPLITS_TO_SIZES = {'train': int(round(count*(1-_RATIO_VALIDATION))),
                     'validation': int(round(count*_RATIO_VALIDATION))}
 
