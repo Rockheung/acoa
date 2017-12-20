@@ -584,7 +584,8 @@ def main(_):
 
     # Variables to train.
     variables_to_train = _get_variables_to_train()
-
+    print("ddddddddddddddddddddddddddddddddddddddddddddddddd")
+    print(variables_to_train)
     #  and returns a train_tensor and summary_op
     total_loss, clones_gradients = model_deploy.optimize_clones(
         clones,
@@ -610,14 +611,7 @@ def main(_):
     # Merge all summaries together.
     summary_op = tf.summary.merge(list(summaries), name='summary_op')
 
-    # Set GPU
-    # A value between 0 and 1 that indicates what fraction of the
-    # available GPU memory to pre-allocate for each process.  1 means
-    # to pre-allocate all of the GPU memory, 0.5 means the process
-    # allocates ~50% of the available GPU memory.
-    config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
-    config.gpu_options.allow_growth = True
+
 
 
     ###########################
@@ -634,8 +628,7 @@ def main(_):
         log_every_n_steps=FLAGS.log_every_n_steps,
         save_summaries_secs=FLAGS.save_summaries_secs,
         save_interval_secs=FLAGS.save_interval_secs,
-        sync_optimizer=optimizer if FLAGS.sync_replicas else None,
-        session_config=config)
+        sync_optimizer=optimizer if FLAGS.sync_replicas else None)
 
 
 if __name__ == '__main__':
